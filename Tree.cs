@@ -1,9 +1,12 @@
-﻿using OxyPlot;
+﻿using System.Text;
+using Microsoft.VisualBasic.Logging;
+using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.WindowsForms;
 
 #pragma warning disable CA2000
 #pragma warning disable CA1303
+#pragma warning disable CA1305
 
 namespace RiskCalculator;
 internal static class Tree
@@ -27,9 +30,11 @@ internal static class Tree
     // Требуется вычислить сумму вероятностей всех вершин, находящихся в badPoints.
     // Затем нужно пройти по значениям от 0 до maxReservedMoney и сохранить пары: зарезервированные деньги - риск
     // Потом строим график. По оси y риск, по оси x зарезервированные деньги
-    internal static List<DataPoint> CalculatePoints (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion)
+    internal static List<DataPoint> CalculatePoints (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion, out StringBuilder logs)
     {
         List<DataPoint> dataPoints = [];
+        logs = new StringBuilder();
+
         for (int i = 0; i <= maxReservedMoney; i++)
         {
             int mortgageLoan = housePrice - personalMoney + i; // Ипотечный кредит в тысячах рублей, D0
@@ -81,13 +86,11 @@ internal static class Tree
                 badPointsProbabilitySum += node.Probability;
             }
 
-            /*
-            Console.WriteLine();
-            Console.WriteLine($"Риск заёмщика при резерве {i,-3}: {Math.Round(badPointsProbabilitySum, 5),-15}");
-            Console.WriteLine($"Ипотечный кредит в тысячах рублей, D0: {mortgageLoan}");
-            Console.WriteLine($"Годовой платеж в тысячах рублей, R: {yearlyPayment}");
-            Console.WriteLine();
-            */
+            _ = logs.AppendLine();
+            _ = logs.AppendLine($"Риск заёмщика при резерве {i,-3}: {Math.Round(badPointsProbabilitySum, 5),-15}");
+            _ = logs.AppendLine($"Ипотечный кредит в тысячах рублей, D0: {mortgageLoan}");
+            _ = logs.AppendLine($"Годовой платеж в тысячах рублей, R: {yearlyPayment}");
+            _ = logs.AppendLine();
 
             dataPoints.Add(new DataPoint(i, badPointsProbabilitySum));
         }
@@ -95,35 +98,61 @@ internal static class Tree
         return dataPoints;
     }
 
-    internal static void DrawGraphic (List<DataPoint> dataPoints)
+    internal static void DrawGraphic (List<DataPoint> dataPoints, StringBuilder logs)
     {
-        // Построение графика
+        // Создание модели графика
         PlotModel plotModel = new();
         LineSeries lineSeries = new()
         {
             ItemsSource = dataPoints
         };
-
         plotModel.Series.Add(lineSeries);
 
-        // Отображение графика
+        // Создание вкладок
+        TabControl tabControl = new()
+        {
+            Dock = DockStyle.Fill
+        };
+
+        // Вкладка с графиком
+        TabPage graphTabPage = new()
+        {
+            Text = "График"
+        };
         PlotView plotView = new()
         {
             Dock = DockStyle.Fill,
             Model = plotModel
         };
+        graphTabPage.Controls.Add(plotView);
+        tabControl.TabPages.Add(graphTabPage);
 
+        // Вкладка с логами
+        TabPage logsTabPage = new()
+        {
+            Text = "Логи"
+        };
+        TextBox logTextBox = new()
+        {
+            Dock = DockStyle.Fill,
+            Multiline = true,
+            ScrollBars = ScrollBars.Vertical,
+            ReadOnly = true,
+            Text = logs.ToString()
+        };
+        logsTabPage.Controls.Add(logTextBox);
+        tabControl.TabPages.Add(logsTabPage);
+
+        // Создание и отображение формы
         Form form = new()
         {
             Text = "График",
             AutoScaleMode = AutoScaleMode.Dpi,
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Dock = DockStyle.Fill,
             Width = 800,
             Height = 600
         };
-
-        form.Controls.Add(plotView);
+        form.Controls.Add(tabControl);
         _ = form.ShowDialog();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.VisualBasic.Logging;
 using OxyPlot;
 
 #pragma warning disable CA1303
@@ -248,7 +249,7 @@ internal sealed class Program : Form
         return incomeDispersion;
     }
 
-    private static void CalculateButton_Click (object? sender, EventArgs e)
+    private static async void CalculateButton_Click (object? sender, EventArgs e)
     {
         // Создание StringBuilder для сбора сообщений об ошибках
         StringBuilder sb = new();
@@ -295,7 +296,17 @@ internal sealed class Program : Form
         }
 
         // Вычисление точек для графика
-        List<DataPoint> dataPoints = Tree.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion);
-        Tree.DrawGraphic(dataPoints);
+        //List<DataPoint> dataPoints = Tree.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion);
+        //Tree.DrawGraphic(dataPoints);
+
+        // Запуск длительной операции в фоновом потоке
+        await Task.Run(() =>
+        {
+            List<DataPoint> dataPoints = Tree.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
+
+            // Отрисовка графика также в фоновом потоке
+            Tree.DrawGraphic(dataPoints, logs);
+        }).ConfigureAwait(false);
+
     }
 }
