@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AnalysisLevel>latest-all</AnalysisLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+    <WarningLevel>9999</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <WarningLevel>9999</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OxyPlot.Core" Version="2.1.2" />
+    <PackageReference Include="OxyPlot.WindowsForms" Version="2.1.2" />
+  </ItemGroup>
+
+</Project>
