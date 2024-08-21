@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Microsoft.VisualBasic.Logging;
 using OxyPlot;
 
 #pragma warning disable CA1303

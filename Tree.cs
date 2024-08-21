@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Microsoft.VisualBasic.Logging;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.WindowsForms;
