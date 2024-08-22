@@ -85,50 +85,6 @@ internal static class Utilities
 
     internal static void DrawGraphic (List<DataPoint> dataPoints, StringBuilder logs)
     {
-        // Создание модели графика
-        PlotModel plotModel = new();
-        LineSeries lineSeries = new()
-        {
-            ItemsSource = dataPoints
-        };
-        plotModel.Series.Add(lineSeries);
-
-        // Создание вкладок
-        TabControl tabControl = new()
-        {
-            Dock = DockStyle.Fill
-        };
-
-        // Вкладка с графиком
-        TabPage graphTabPage = new()
-        {
-            Text = "График"
-        };
-        PlotView plotView = new()
-        {
-            Dock = DockStyle.Fill,
-            Model = plotModel
-        };
-        graphTabPage.Controls.Add(plotView);
-        tabControl.TabPages.Add(graphTabPage);
-
-        // Вкладка с логами
-        TabPage logsTabPage = new()
-        {
-            Text = "Логи"
-        };
-        TextBox logTextBox = new()
-        {
-            Dock = DockStyle.Fill,
-            Multiline = true,
-            ScrollBars = ScrollBars.Vertical,
-            ReadOnly = true,
-            Text = logs.ToString()
-        };
-        logsTabPage.Controls.Add(logTextBox);
-        tabControl.TabPages.Add(logsTabPage);
-
-        // Создание и отображение формы
         Form form = new()
         {
             Text = "График",
@@ -137,6 +93,53 @@ internal static class Utilities
             Width = 800,
             Height = 600
         };
+
+        PlotModel plotModel = new();
+        LineSeries lineSeries = new()
+        {
+            ItemsSource = dataPoints
+        };
+        plotModel.Series.Add(lineSeries);
+
+        PlotView plotView = new()
+        {
+            Dock = DockStyle.Fill,
+            Model = plotModel
+        };
+
+        TabControl tabControl = new()
+        {
+            Dock = DockStyle.Fill
+        };
+
+        TabPage graphTabPage = new()
+        {
+            Text = "График",
+            Font = new Font("null", 14),
+        };
+        graphTabPage.Controls.Add(plotView);
+        tabControl.TabPages.Add(graphTabPage);
+
+        TabPage logsTabPage = new()
+        {
+            Text = "Логи",
+            Font = new Font("null", 14),
+        };
+
+        TextBox logTextBox = new()
+        {
+            Dock = DockStyle.Fill,
+            ScrollBars = ScrollBars.Vertical,
+            Multiline = true,
+            ReadOnly = true,
+            WordWrap = false,
+            Font = new Font("null", 14),
+            Text = logs.ToString()
+        };
+
+        logsTabPage.Controls.Add(logTextBox);
+        tabControl.TabPages.Add(logsTabPage);
+
         form.Controls.Add(tabControl);
         _ = form.ShowDialog();
     }
