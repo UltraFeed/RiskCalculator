@@ -29,6 +29,7 @@ internal static class Tree
     // Требуется вычислить сумму вероятностей всех вершин, находящихся в badPoints.
     // Затем нужно пройти по значениям от 0 до maxReservedMoney и сохранить пары: зарезервированные деньги - риск
     // Потом строим график. По оси y риск, по оси x зарезервированные деньги
+
     internal static List<DataPoint> CalculatePoints (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion, out StringBuilder logs)
     {
         List<DataPoint> dataPoints = [];
