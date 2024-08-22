@@ -290,22 +290,14 @@ internal sealed class Program : Form
         // Проверка суммы вероятностей
         if (!Validator.IsProbabilitySumValid(incomeDispersion))
         {
-            _ = MessageBox.Show("Сумма вероятностей не равна 1.0 с учетом погрешности.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            _ = MessageBox.Show("Сумма вероятностей не равна 1.0 с учетом погрешности", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 
-        // Вычисление точек для графика
-        //List<DataPoint> dataPoints = Tree.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion);
-        //Tree.DrawGraphic(dataPoints);
-
-        // Запуск длительной операции в фоновом потоке
         await Task.Run(() =>
         {
             List<DataPoint> dataPoints = Tree.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-
-            // Отрисовка графика также в фоновом потоке
             Tree.DrawGraphic(dataPoints, logs);
         }).ConfigureAwait(false);
-
     }
 }
