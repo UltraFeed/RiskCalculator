@@ -23,9 +23,6 @@ internal sealed class Program : Form
         AutoScaleMode = AutoScaleMode.Dpi;
         AutoSizeMode = AutoSizeMode.GrowAndShrink;
         FormBorderStyle = FormBorderStyle.Sizable;
-        //Width = 700;
-        //Height = Size.Height * 2;
-        //Size = new Size(Size.Width, Size.Height * 2);
     }
 
     [STAThread]
@@ -141,14 +138,6 @@ internal sealed class Program : Form
             Dock = DockStyle.Fill,
             AutoSize = true,
             Text = "Распределение годового дохода, ξt:",
-            Margin = new Padding(0, 20, 0, 0)
-        };
-
-        Label EmptyLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "",
         };
 
         Button addIncomeButton = new()
@@ -201,7 +190,7 @@ internal sealed class Program : Form
         panel.Controls.Add(loanInterestRateLabel);
         panel.Controls.Add(loanInterestRateNumericUpDown);
         panel.Controls.Add(incomeDispersionLabel);
-        panel.Controls.Add(EmptyLabel);
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true });
         panel.Controls.Add(addIncomeButton);
         panel.Controls.Add(removeIncomeButton);
         panel.Controls.Add(incomeDispersionPanel);
