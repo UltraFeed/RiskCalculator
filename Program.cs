@@ -75,7 +75,7 @@ internal sealed class Program : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            Text = "2000",
+            Text = "1000",
         };
 
         Label creditDurationLabel = new()
@@ -88,7 +88,7 @@ internal sealed class Program : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            Text = "15",
+            Text = "8",
         };
 
         Label personalMoneyLabel = new()
@@ -101,7 +101,7 @@ internal sealed class Program : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            Text = "100",
+            Text = "500",
         };
 
         Label loanInterestRateLabel = new()
@@ -114,7 +114,7 @@ internal sealed class Program : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            Text = "0,22",
+            Text = "0,08",
         };
 
         Label incomeDispersionLabel = new()
@@ -188,11 +188,11 @@ internal sealed class Program : Form
         Controls.Add(panel);
 
         // Инициализация значений по умолчанию для распределения дохода
-        AddIncomeField(0, 0.1);
-        AddIncomeField(720, 0.1);
-        AddIncomeField(840, 0.65);
-        AddIncomeField(960, 0.1);
-        AddIncomeField(1200, 0.05);
+        AddIncomeField(200, 0.1);
+        AddIncomeField(250, 0.2);
+        AddIncomeField(300, 0.4);
+        AddIncomeField(350, 0.2);
+        AddIncomeField(400, 0.1);
     }
     private static void AddIncomeField (int income, double probability)
     {
