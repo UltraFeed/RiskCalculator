@@ -8,6 +8,7 @@ using OxyPlot.WindowsForms;
 #pragma warning disable CA1305
 
 namespace RiskCalculator;
+
 internal static class Utilities
 {
     // Из каждой вершины будет выходить количество новых вершин, равных incomeDispersion.Count.

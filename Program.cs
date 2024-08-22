@@ -4,18 +4,17 @@ using OxyPlot;
 #pragma warning disable CA1303
 #pragma warning disable CA1305
 #pragma warning disable CA2000
-#pragma warning disable CS8602
 #pragma warning disable CS8618
 
 namespace RiskCalculator;
 
 internal sealed class Program : Form
 {
-    private static TextBox housePriceTextBox;
-    private static TextBox maxReservedMoneyTextBox;
-    private static TextBox creditDurationTextBox;
-    private static TextBox personalMoneyTextBox;
-    private static TextBox loanInterestRateTextBox;
+    private static NumericUpDown housePriceNumericUpDown;
+    private static NumericUpDown maxReservedMoneyNumericUpDown;
+    private static NumericUpDown creditDurationNumericUpDown;
+    private static NumericUpDown personalMoneyNumericUpDown;
+    private static NumericUpDown loanInterestRateNumericUpDown;
     private static TableLayoutPanel incomeDispersionPanel;
 
     private Program ()
@@ -37,6 +36,7 @@ internal sealed class Program : Form
         Program program = new();
         Application.Run(program);
     }
+
     private void InitializeComponent ()
     {
         Text = "RiskCalculator";
@@ -57,11 +57,14 @@ internal sealed class Program : Form
             Text = "Стоимость квартиры (тыс. руб.), S0:"
         };
 
-        housePriceTextBox = new()
+        housePriceNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "2000",
+            Minimum = 0,
+            Maximum = decimal.MaxValue,
+            Value = 2000,
+            DecimalPlaces = 0,
+            UpDownAlign = LeftRightAlignment.Right,
         };
 
         Label maxReservedMoneyLabel = new()
@@ -71,11 +74,14 @@ internal sealed class Program : Form
             Text = "Макс. начальный резерв денег (тыс. руб.), Z0max:"
         };
 
-        maxReservedMoneyTextBox = new()
+        maxReservedMoneyNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "1000",
+            Minimum = 0,
+            Maximum = decimal.MaxValue,
+            Value = 1000,
+            DecimalPlaces = 0,
+            UpDownAlign = LeftRightAlignment.Right,
         };
 
         Label creditDurationLabel = new()
@@ -84,11 +90,15 @@ internal sealed class Program : Form
             AutoSize = true,
             Text = "Длительность кредита в годах, T:"
         };
-        creditDurationTextBox = new()
+
+        creditDurationNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "8",
+            Minimum = 0,
+            Maximum = decimal.MaxValue,
+            Value = 8,
+            DecimalPlaces = 0,
+            UpDownAlign = LeftRightAlignment.Right,
         };
 
         Label personalMoneyLabel = new()
@@ -97,11 +107,15 @@ internal sealed class Program : Form
             AutoSize = true,
             Text = "Собственные деньги в нулевой момент (тыс. руб.), M0:"
         };
-        personalMoneyTextBox = new()
+
+        personalMoneyNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "500",
+            Minimum = 0,
+            Maximum = decimal.MaxValue,
+            Value = 500,
+            DecimalPlaces = 0,
+            UpDownAlign = LeftRightAlignment.Right,
         };
 
         Label loanInterestRateLabel = new()
@@ -110,11 +124,15 @@ internal sealed class Program : Form
             AutoSize = true,
             Text = "Годовая ставка по кредиту в долях, r:"
         };
-        loanInterestRateTextBox = new()
+
+        loanInterestRateNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "0,08",
+            Minimum = 0,
+            Maximum = 1,
+            Value = 0.08M,
+            DecimalPlaces = 2,
+            UpDownAlign = LeftRightAlignment.Right,
         };
 
         Label incomeDispersionLabel = new()
@@ -125,7 +143,7 @@ internal sealed class Program : Form
             Margin = new Padding(0, 20, 0, 0)
         };
 
-        Label incomeDispersionLabelEmpty = new()
+        Label EmptyLabel = new()
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
@@ -164,22 +182,22 @@ internal sealed class Program : Form
         };
 
         addIncomeButton.Click += (sender, e) => AddIncomeField(0, 0.0);
-        removeIncomeButton.Click += RemoveLastIncomeRow;
+        removeIncomeButton.Click += RemoveLastIncomeField;
         calculateButton.Click += CalculateButton_Click;
 
         // Создание панелей для размещения элементов
         panel.Controls.Add(housePriceLabel);
-        panel.Controls.Add(housePriceTextBox);
+        panel.Controls.Add(housePriceNumericUpDown);
         panel.Controls.Add(maxReservedMoneyLabel);
-        panel.Controls.Add(maxReservedMoneyTextBox);
+        panel.Controls.Add(maxReservedMoneyNumericUpDown);
         panel.Controls.Add(creditDurationLabel);
-        panel.Controls.Add(creditDurationTextBox);
+        panel.Controls.Add(creditDurationNumericUpDown);
         panel.Controls.Add(personalMoneyLabel);
-        panel.Controls.Add(personalMoneyTextBox);
+        panel.Controls.Add(personalMoneyNumericUpDown);
         panel.Controls.Add(loanInterestRateLabel);
-        panel.Controls.Add(loanInterestRateTextBox);
+        panel.Controls.Add(loanInterestRateNumericUpDown);
         panel.Controls.Add(incomeDispersionLabel);
-        panel.Controls.Add(incomeDispersionLabelEmpty);
+        panel.Controls.Add(EmptyLabel);
         panel.Controls.Add(addIncomeButton);
         panel.Controls.Add(removeIncomeButton);
         panel.Controls.Add(incomeDispersionPanel);
@@ -211,7 +229,7 @@ internal sealed class Program : Form
         incomeDispersionPanel.Controls.Add(probabilityTextBox, 3, incomeDispersionPanel.RowCount - 1);
     }
 
-    private void RemoveLastIncomeRow (object? sender, EventArgs e)
+    private void RemoveLastIncomeField (object? sender, EventArgs e)
     {
         if (incomeDispersionPanel.RowCount > 0)
         {
@@ -250,47 +268,17 @@ internal sealed class Program : Form
 
     private static async void CalculateButton_Click (object? sender, EventArgs e)
     {
-        // Создание StringBuilder для сбора сообщений об ошибках
-        StringBuilder sb = new();
-
-        // Валидация входных значений
-        if (!Validator.IsPositiveInteger(housePriceTextBox.Text, out int housePrice))
-        {
-            _ = sb.AppendLine($"Неверное значение для {housePriceTextBox.Parent.Controls [0].Text}");
-        }
-
-        if (!Validator.IsPositiveInteger(maxReservedMoneyTextBox.Text, out int maxReservedMoney))
-        {
-            _ = sb.AppendLine($"Неверное значение для {maxReservedMoneyTextBox.Parent.Controls [0].Text}");
-        }
-
-        if (!Validator.IsPositiveInteger(creditDurationTextBox.Text, out int creditDuration))
-        {
-            _ = sb.AppendLine($"Неверное значение для {creditDurationTextBox.Parent.Controls [0].Text}");
-        }
-
-        if (!Validator.IsPositiveInteger(personalMoneyTextBox.Text, out int personalMoney))
-        {
-            _ = sb.AppendLine($"Неверное значение для {personalMoneyTextBox.Parent.Controls [0].Text}");
-        }
-
-        if (!Validator.IsPositiveDouble(loanInterestRateTextBox.Text, out double loanInterestRate))
-        {
-            _ = sb.AppendLine($"Неверное значение для {loanInterestRateTextBox.Parent.Controls [0].Text}");
-        }
-
-        if (sb.Length > 0)
-        {
-            _ = MessageBox.Show(sb.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
+        int housePrice = (int) housePriceNumericUpDown.Value;
+        int maxReservedMoney = (int) maxReservedMoneyNumericUpDown.Value;
+        int creditDuration = (int) creditDurationNumericUpDown.Value;
+        int personalMoney = (int) personalMoneyNumericUpDown.Value;
+        double loanInterestRate = (double) loanInterestRateNumericUpDown.Value;
 
         List<KeyValuePair<int, double>> incomeDispersion = GetDispersionList();
 
-        // Проверка суммы вероятностей
         if (!Validator.IsProbabilitySumValid(incomeDispersion))
         {
-            _ = MessageBox.Show("Сумма вероятностей не равна 1.0 с учетом погрешности", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            _ = MessageBox.Show($"Сумма вероятностей не равна {1.0}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 

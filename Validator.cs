@@ -12,14 +12,4 @@ internal static class Validator
 
         return Math.Abs(sum - 1.0) < epsilon;
     }
-
-    internal static bool IsPositiveInteger (string input, out int value)
-    {
-        return int.TryParse(input, out value) && value > 0;
-    }
-
-    internal static bool IsPositiveDouble (string input, out double value)
-    {
-        return double.TryParse(input, out value) && value > 0;
-    }
 }
