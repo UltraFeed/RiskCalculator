@@ -8,7 +8,7 @@ using OxyPlot.WindowsForms;
 #pragma warning disable CA1305
 
 namespace RiskCalculator;
-internal static class Tree
+internal static class Utilities
 {
     // Даны такие входные данные.
     // Нужно построить дерево вероятностей.

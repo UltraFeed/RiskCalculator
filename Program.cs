@@ -296,8 +296,8 @@ internal sealed class Program : Form
 
         await Task.Run(() =>
         {
-            List<DataPoint> dataPoints = Tree.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-            Tree.DrawGraphic(dataPoints, logs);
+            List<DataPoint> dataPoints = Utilities.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
+            Utilities.DrawGraphic(dataPoints, logs);
         }).ConfigureAwait(false);
     }
 }
