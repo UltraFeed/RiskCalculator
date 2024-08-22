@@ -2,7 +2,6 @@
 using OxyPlot;
 
 #pragma warning disable CA1303
-#pragma warning disable CA1305
 #pragma warning disable CA2000
 #pragma warning disable CS8618
 
@@ -20,11 +19,12 @@ internal sealed class Program : Form
     private Program ()
     {
         InitializeComponent();
-        AutoSize = false;
+        AutoSize = true;
+        AutoScaleMode = AutoScaleMode.Dpi;
         AutoSizeMode = AutoSizeMode.GrowAndShrink;
         FormBorderStyle = FormBorderStyle.Sizable;
-        Width = 500;
-        Height = Size.Height * 2;
+        //Width = 700;
+        //Height = Size.Height * 2;
         //Size = new Size(Size.Width, Size.Height * 2);
     }
 
@@ -47,7 +47,7 @@ internal sealed class Program : Form
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Dock = DockStyle.Fill,
             ColumnCount = 2,
-            Padding = new Padding(10)
+            //Padding = new Padding(10)
         };
 
         Label housePriceLabel = new()
@@ -133,6 +133,7 @@ internal sealed class Program : Form
             Value = 0.08M,
             DecimalPlaces = 2,
             UpDownAlign = LeftRightAlignment.Right,
+            Increment = 0.01M,
         };
 
         Label incomeDispersionLabel = new()
@@ -150,20 +151,11 @@ internal sealed class Program : Form
             Text = "",
         };
 
-        incomeDispersionPanel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            ColumnCount = 4,
-            RowCount = 0, // Количество строк будет динамически изменяться
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
-        };
-
         Button addIncomeButton = new()
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Text = "Добавить строку дохода"
         };
 
@@ -171,13 +163,25 @@ internal sealed class Program : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Text = "Удалить строку дохода"
+        };
+
+        incomeDispersionPanel = new()
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            ColumnCount = 4,
+            RowCount = 0, // Количество строк будет динамически изменяться
+            CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
         };
 
         Button calculateButton = new()
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Text = "Рассчитать"
         };
 
@@ -206,27 +210,63 @@ internal sealed class Program : Form
         Controls.Add(panel);
 
         // Инициализация значений по умолчанию для распределения дохода
-        AddIncomeField(200, 0.1);
-        AddIncomeField(250, 0.2);
-        AddIncomeField(300, 0.4);
-        AddIncomeField(350, 0.2);
-        AddIncomeField(400, 0.1);
+        List<KeyValuePair<int, double>> defaultValues =
+        [
+             new(200, 0.1),
+             new(250, 0.2),
+             new(300, 0.4),
+             new(350, 0.2),
+             new(400, 0.1),
+        ];
+
+        foreach (KeyValuePair<int, double> value in defaultValues)
+        {
+            AddIncomeField(value.Key, value.Value);
+        }
     }
-    private static void AddIncomeField (int income, double probability)
+
+    private static void AddIncomeField (int moneyValue, double probabilityValue)
     {
-        // Установка новой строки
         incomeDispersionPanel.RowCount++;
         _ = incomeDispersionPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-        Label moneyLabel = new() { Text = "Деньги:", AutoSize = true };
-        TextBox incomeTextBox = new() { Text = income.ToString(), Width = 80 };
-        Label probabilityLabel = new() { Text = "Вероятность:", AutoSize = true };
-        TextBox probabilityTextBox = new() { Text = probability.ToString("F2"), Width = 80 };
+        Label moneyLabel = new()
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            Text = "Деньги:"
+        };
+
+        NumericUpDown moneyNumericUpDown = new()
+        {
+            Dock = DockStyle.Fill,
+            Minimum = 0,
+            Maximum = decimal.MaxValue,
+            Value = moneyValue,
+            DecimalPlaces = 0,
+        };
+
+        Label probabilityLabel = new()
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            Text = "Вероятность:"
+        };
+
+        NumericUpDown probabilityNumericUpDown = new()
+        {
+            Dock = DockStyle.Fill,
+            Minimum = 0,
+            Maximum = 1,
+            Value = (decimal) probabilityValue,
+            DecimalPlaces = 2,
+            Increment = 0.01M,
+        };
 
         incomeDispersionPanel.Controls.Add(moneyLabel, 0, incomeDispersionPanel.RowCount - 1);
-        incomeDispersionPanel.Controls.Add(incomeTextBox, 1, incomeDispersionPanel.RowCount - 1);
+        incomeDispersionPanel.Controls.Add(moneyNumericUpDown, 1, incomeDispersionPanel.RowCount - 1);
         incomeDispersionPanel.Controls.Add(probabilityLabel, 2, incomeDispersionPanel.RowCount - 1);
-        incomeDispersionPanel.Controls.Add(probabilityTextBox, 3, incomeDispersionPanel.RowCount - 1);
+        incomeDispersionPanel.Controls.Add(probabilityNumericUpDown, 3, incomeDispersionPanel.RowCount - 1);
     }
 
     private void RemoveLastIncomeField (object? sender, EventArgs e)
@@ -248,18 +288,12 @@ internal sealed class Program : Form
 
     internal static List<KeyValuePair<int, double>> GetDispersionList ()
     {
-        // Сборка распределения дохода
         List<KeyValuePair<int, double>> incomeDispersion = [];
-        // Проходим по всем строкам в TableLayoutPanel
         for (int row = 0; row < incomeDispersionPanel.RowCount; row++)
         {
-            if (incomeDispersionPanel.GetControlFromPosition(1, row) is TextBox incomeTextBox && incomeDispersionPanel.GetControlFromPosition(3, row) is TextBox probabilityTextBox)
+            if (incomeDispersionPanel.GetControlFromPosition(1, row) is NumericUpDown moneyNumericUpDown && incomeDispersionPanel.GetControlFromPosition(3, row) is NumericUpDown probabilityNumericUpDown)
             {
-                if (int.TryParse(incomeTextBox.Text, out int income) &&
-                    double.TryParse(probabilityTextBox.Text, out double probability))
-                {
-                    incomeDispersion.Add(new KeyValuePair<int, double>(income, probability));
-                }
+                incomeDispersion.Add(new KeyValuePair<int, double>((int) moneyNumericUpDown.Value, (double) probabilityNumericUpDown.Value));
             }
         }
 
