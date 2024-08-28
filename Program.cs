@@ -9,6 +9,7 @@ namespace RiskCalculator;
 
 internal sealed class Program : Form
 {
+    private static CheckBox taskTypeCheckBox;
     private static NumericUpDown housePriceNumericUpDown;
     private static NumericUpDown maxReservedMoneyNumericUpDown;
     private static NumericUpDown creditDurationNumericUpDown;
@@ -23,6 +24,7 @@ internal sealed class Program : Form
         AutoScaleMode = AutoScaleMode.Dpi;
         AutoSizeMode = AutoSizeMode.GrowAndShrink;
         FormBorderStyle = FormBorderStyle.Sizable;
+        Dock = DockStyle.Fill;
     }
 
     [STAThread]
@@ -45,6 +47,21 @@ internal sealed class Program : Form
             Dock = DockStyle.Fill,
             ColumnCount = 2,
             //Padding = new Padding(10)
+        };
+
+        Label taskTypeLabel = new()
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            Text = "Выберите постановку задачи"
+        };
+
+        taskTypeCheckBox = new()
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            Text = "",
+            AutoCheck = true,
         };
 
         Label housePriceLabel = new()
@@ -177,8 +194,12 @@ internal sealed class Program : Form
         addIncomeButton.Click += (sender, e) => AddIncomeField(0, 0.0);
         removeIncomeButton.Click += RemoveLastIncomeField;
         calculateButton.Click += CalculateButton_Click;
+        taskTypeCheckBox.CheckedChanged += TaskType_Click;
+        taskTypeCheckBox.Checked = true;
 
         // Создание панелей для размещения элементов
+        panel.Controls.Add(taskTypeLabel);
+        panel.Controls.Add(taskTypeCheckBox);
         panel.Controls.Add(housePriceLabel);
         panel.Controls.Add(housePriceNumericUpDown);
         panel.Controls.Add(maxReservedMoneyLabel);
@@ -305,10 +326,33 @@ internal sealed class Program : Form
             return;
         }
 
-        await Task.Run(() =>
+        if (taskTypeCheckBox.Checked)
         {
-            List<DataPoint> dataPoints = Utilities.CalculatePoints2(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-            Utilities.DrawGraphic(dataPoints, logs);
-        }).ConfigureAwait(false);
+            await Task.Run(() =>
+            {
+                List<DataPoint> dataPoints = Utilities.CalculatePoints2(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
+                Utilities.DrawGraphic(dataPoints, logs);
+            }).ConfigureAwait(false);
+        }
+        else
+        {
+            await Task.Run(() =>
+            {
+                List<DataPoint> dataPoints = Utilities.CalculatePoints1(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
+                Utilities.DrawGraphic(dataPoints, logs);
+            }).ConfigureAwait(false);
+        }
+    }
+
+    private static void TaskType_Click (object? sender, EventArgs e)
+    {
+        if (taskTypeCheckBox.Checked)
+        {
+            taskTypeCheckBox.Text = "Выбрана постановка 2";
+        }
+        else
+        {
+            taskTypeCheckBox.Text = "Выбрана постановка 1";
+        }
     }
 }
