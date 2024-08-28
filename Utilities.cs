@@ -87,13 +87,6 @@ internal static class Utilities
 
     // Вторая постановка
     // Постановка та же самая, но есть возможность управлять резервом.
-    // То есть выбирать какую часть newMoney (в формулах Mt) можно использовать для досрочного погашения кредита
-    // Для этого нужно сделать полный перебор и выбрать такой резерв, где риск минимален
-    // После этого пересчитывается mortgageLoan и yearlyPayment по тем же формулам
-
-    // Для T-1 считается по отдельному алгоритму. Надо вычислить начальные условия
-    // Риск обнуляется. Дальше идет цикл по incomeDispersion.Count. Если incomeDispersion[i].Key < требуемый платеж, то риск увеличивается на incomeDispersion[i].Value
-    // Перебор по времени нужно организовать с конца
     internal static List<DataPoint> CalculatePoints2 (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion, out StringBuilder logs)
     {
         List<DataPoint> dataPoints = [];
