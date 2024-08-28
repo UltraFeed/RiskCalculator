@@ -31,9 +31,7 @@ internal static class Utilities
 
         for (int startReserve = 0; startReserve < maxReservedMoney; startReserve++)
         {
-            int mortgageLoan = housePrice - personalMoney + startReserve; // Ипотечный кредит в тысячах рублей, D0
-
-            double yearlyPayment = mortgageLoan * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
+            double yearlyPayment = (housePrice - personalMoney + startReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
 
             Dictionary<double, double> currentLevel = new() { { startReserve, 1.0 } };
             double badPointsProbabilitySum = 0.0;
@@ -75,7 +73,7 @@ internal static class Utilities
 
             _ = logs.AppendLine();
             _ = logs.AppendLine($"Риск заёмщика при резерве {startReserve,-3}: {Math.Round(badPointsProbabilitySum, 5),-15}");
-            _ = logs.AppendLine($"Ипотечный кредит в тысячах рублей, D0: {mortgageLoan}");
+            _ = logs.AppendLine($"Ипотечный кредит в тысячах рублей, D0: {housePrice - personalMoney + startReserve}");
             _ = logs.AppendLine($"Годовой платеж в тысячах рублей, R: {yearlyPayment}");
             _ = logs.AppendLine();
 
@@ -160,10 +158,10 @@ internal static class Utilities
             // возможно нужно обнулять currentRisk
         }
 
+        // последняя итерация???
         for (int startReserve = 0; startReserve < maxReservedMoney; startReserve++)
         {
-            int mortgageLoan = housePrice - personalMoney + startReserve; // Ипотечный кредит в тысячах рублей, D0
-            double yearlyPayment = mortgageLoan * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
+            double yearlyPayment = (housePrice - personalMoney + startReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
             double tmp = 0;
             foreach (KeyValuePair<int, double> income in incomeDispersion)
             {
@@ -173,7 +171,7 @@ internal static class Utilities
                 }
                 else
                 {
-                    int indexS = Convert.ToInt32(Math.Ceiling((mortgageLoan * (1 + loanInterestRate)) - yearlyPayment));
+                    int indexS = Convert.ToInt32(Math.Ceiling(((housePrice - personalMoney + startReserve) * (1 + loanInterestRate)) - yearlyPayment));
                     int indexM = Convert.ToInt32(Math.Floor(startReserve + income.Key - yearlyPayment));
                     tmp += income.Value * nextRisk [indexS, indexM];
                 }
