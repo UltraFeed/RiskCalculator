@@ -307,7 +307,7 @@ internal sealed class Program : Form
 
         await Task.Run(() =>
         {
-            List<DataPoint> dataPoints = Utilities.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
+            List<DataPoint> dataPoints = Utilities.CalculatePoints2(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
             Utilities.DrawGraphic(dataPoints, logs);
         }).ConfigureAwait(false);
     }
