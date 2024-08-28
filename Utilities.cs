@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.WindowsForms;
@@ -117,13 +116,10 @@ internal static class Utilities
         // Основная часть
         for (int currentTime = creditDuration - 2; currentTime > 1; currentTime--)
         {
-            Debug.WriteLine($"{nameof(currentTime)} = {currentTime}");
             for (int currentHousePrice = 0; currentHousePrice < housePrice; currentHousePrice++)
             {
-                Debug.WriteLine($"{nameof(currentHousePrice)} = {currentHousePrice}");
                 for (int currentMoney = 0; currentMoney < housePrice; currentMoney++)
                 {
-                    Debug.WriteLine($"{nameof(currentMoney)} = {currentMoney}");
                     if (currentMoney > currentHousePrice)
                     {
                         currentRisk [currentHousePrice, currentMoney] = 0;
@@ -134,7 +130,6 @@ internal static class Utilities
 
                         for (int currentReserve = 0; currentReserve < currentMoney; currentReserve++)
                         {
-                            Debug.WriteLine($"{nameof(currentReserve)} = {currentReserve}");
                             double nextPayment = (currentHousePrice - currentMoney + currentReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration - currentTime) / (Math.Pow(1 + loanInterestRate, creditDuration - currentTime) - 1));
 
                             double tmp = 0;
