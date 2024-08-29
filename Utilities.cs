@@ -199,7 +199,7 @@ internal static class Utilities
         Dictionary<Tuple<int, int>, double> nextRisk = [];
         Dictionary<Tuple<int, int>, double> currentRisk = [];
 #if DEBUG
-        Debug.WriteLine($"{nameof(creditDuration)}{-1} = {creditDuration - 1}");
+        Debug.WriteLine($"[{DateTime.Now:dd.MM.yyyy hh:mm:ss}] {nameof(creditDuration)}{-1} = {creditDuration - 1}");
 #endif
         for (int currentTime = creditDuration - 1; currentTime >= 0; currentTime--)
         {
@@ -208,7 +208,7 @@ internal static class Utilities
 #if DEBUG
                 if (currentHousePrice % 100 == 0)
                 {
-                    Debug.WriteLine($"{nameof(currentTime)} = {currentTime}, {nameof(currentHousePrice)} = {currentHousePrice}");
+                    Debug.WriteLine($"[{DateTime.Now:dd.MM.yyyy hh:mm:ss}] {nameof(currentTime)} = {currentTime}, {nameof(currentHousePrice)} = {currentHousePrice}");
                 }
 #endif
                 for (int currentMoney = 0; currentMoney < housePrice; currentMoney++)
