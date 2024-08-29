@@ -30,7 +30,7 @@ internal static class Utilities
         List<DataPoint> dataPoints = [];
         logs = new StringBuilder();
 
-        for (int startReserve = 0; startReserve < maxReservedMoney; startReserve++)
+        for (int startReserve = 0; startReserve <= maxReservedMoney; startReserve++)
         {
             double yearlyPayment = (housePrice - personalMoney + startReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
 
@@ -95,8 +95,8 @@ internal static class Utilities
         // подходящий тип данных - Dictionary<Tuple<int, int>, double>
         // словарь - список неповторяющихся элементов, где ключом будет два инта, как индексы массива
         // а значением - вероятность
-        double [,] nextRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
-        double [,] currentRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
+        double [,] nextRisk = new double [housePrice + 1, housePrice + 1]; // заполняется нулями по умолчанию
+        double [,] currentRisk = new double [housePrice + 1, housePrice + 1]; // заполняется нулями по умолчанию
 
         // Считаем начальные условия для времени creditDuration - 1
         // Цикл по ST-1
@@ -123,7 +123,7 @@ internal static class Utilities
             {
                 for (int currentMoney = 0; currentMoney < housePrice; currentMoney++)
                 {
-                    if (currentMoney > currentHousePrice)
+                    if (currentHousePrice < currentMoney)
                     {
                         currentRisk [currentHousePrice, currentMoney] = 0;
                     }
@@ -240,6 +240,10 @@ internal static class Utilities
                             _ = logs.AppendLine($"Начальный резерв: {startReserve}");
                             _ = logs.AppendLine($"Риск: {tmp}");
                             dataPoints.Add(new DataPoint(startReserve, tmp));
+#if DEBUG
+                            //Debug.WriteLine($"{nameof(startReserve)} = {startReserve}");
+                            //Debug.WriteLine($"{nameof(tmp)} = {tmp}");
+#endif
                         }
                     }
                     else
@@ -300,8 +304,11 @@ internal static class Utilities
                 nextRisk = new Dictionary<Tuple<int, int>, double>(currentRisk);
             }
         }
-
-        return dataPoints;
+#if DEBUG
+        Debug.WriteLine($"{nameof(dataPoints)}.Count = {dataPoints.Count}");
+        Debug.WriteLine($"{nameof(dataPoints)}.Distinct().ToList().Count = {dataPoints.Distinct().ToList().Count}");
+#endif
+        return dataPoints.Distinct().ToList();
     }
 
     internal static void DrawGraphic (List<DataPoint> dataPoints, StringBuilder logs)
