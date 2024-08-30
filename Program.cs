@@ -1,21 +1,17 @@
-﻿using System.Text;
-using OxyPlot;
-
-#pragma warning disable CA1303
-#pragma warning disable CA2000
+﻿#pragma warning disable CA1303
 #pragma warning disable CS8618
 
 namespace RiskCalculator;
 
 internal sealed class Program : Form
 {
-    private static CheckBox taskTypeCheckBox;
-    private static NumericUpDown housePriceNumericUpDown;
-    private static NumericUpDown maxReservedMoneyNumericUpDown;
-    private static NumericUpDown creditDurationNumericUpDown;
-    private static NumericUpDown personalMoneyNumericUpDown;
-    private static NumericUpDown loanInterestRateNumericUpDown;
-    private static TableLayoutPanel incomeDispersionPanel;
+    internal static CheckBox taskTypeCheckBox;
+    internal static NumericUpDown housePriceNumericUpDown;
+    internal static NumericUpDown maxReservedMoneyNumericUpDown;
+    internal static NumericUpDown creditDurationNumericUpDown;
+    internal static NumericUpDown personalMoneyNumericUpDown;
+    internal static NumericUpDown loanInterestRateNumericUpDown;
+    internal static TableLayoutPanel incomeDispersionPanel;
 
     private Program ()
     {
@@ -32,7 +28,7 @@ internal sealed class Program : Form
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Program program = new();
+        using Program program = new();
         Application.Run(program);
     }
 
@@ -76,7 +72,7 @@ internal sealed class Program : Form
             Dock = DockStyle.Fill,
             Minimum = 0,
             Maximum = decimal.MaxValue,
-            Value = 2000,
+            Value = 200,
             DecimalPlaces = 0,
             UpDownAlign = LeftRightAlignment.Right,
         };
@@ -93,7 +89,7 @@ internal sealed class Program : Form
             Dock = DockStyle.Fill,
             Minimum = 0,
             Maximum = decimal.MaxValue,
-            Value = 1000,
+            Value = 50,
             DecimalPlaces = 0,
             UpDownAlign = LeftRightAlignment.Right,
         };
@@ -127,7 +123,7 @@ internal sealed class Program : Form
             Dock = DockStyle.Fill,
             Minimum = 0,
             Maximum = decimal.MaxValue,
-            Value = 500,
+            Value = 50,
             DecimalPlaces = 0,
             UpDownAlign = LeftRightAlignment.Right,
         };
@@ -191,10 +187,10 @@ internal sealed class Program : Form
             Text = "Рассчитать"
         };
 
-        addIncomeButton.Click += (sender, e) => AddIncomeField(0, 0.0);
-        removeIncomeButton.Click += RemoveLastIncomeField;
-        calculateButton.Click += CalculateButton_Click;
-        taskTypeCheckBox.CheckedChanged += TaskType_Click;
+        addIncomeButton.Click += (sender, e) => ButtonClicks.AddIncomeField(0, 0.0);
+        removeIncomeButton.Click += ButtonClicks.RemoveLastIncomeField;
+        calculateButton.Click += ButtonClicks.CalculateButton_Click;
+        taskTypeCheckBox.CheckedChanged += ButtonClicks.TaskType_Click;
         taskTypeCheckBox.Checked = true;
 
         // Создание панелей для размещения элементов
@@ -222,137 +218,16 @@ internal sealed class Program : Form
         // Инициализация значений по умолчанию для распределения дохода
         List<KeyValuePair<int, double>> defaultValues =
         [
-             new(200, 0.1),
-             new(250, 0.2),
-             new(300, 0.4),
-             new(350, 0.2),
-             new(400, 0.1),
+             new(20, 0.1),
+             new(25, 0.2),
+             new(30, 0.4),
+             new(35, 0.2),
+             new(40, 0.1),
         ];
 
         foreach (KeyValuePair<int, double> value in defaultValues)
         {
-            AddIncomeField(value.Key, value.Value);
-        }
-    }
-
-    private static void AddIncomeField (int moneyValue, double probabilityValue)
-    {
-        incomeDispersionPanel.RowCount++;
-        _ = incomeDispersionPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-        Label moneyLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Деньги:"
-        };
-
-        NumericUpDown moneyNumericUpDown = new()
-        {
-            Dock = DockStyle.Fill,
-            Minimum = 0,
-            Maximum = decimal.MaxValue,
-            Value = moneyValue,
-            DecimalPlaces = 0,
-        };
-
-        Label probabilityLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Вероятность:"
-        };
-
-        NumericUpDown probabilityNumericUpDown = new()
-        {
-            Dock = DockStyle.Fill,
-            Minimum = 0,
-            Maximum = 1,
-            Value = (decimal) probabilityValue,
-            DecimalPlaces = 2,
-            Increment = 0.01M,
-        };
-
-        incomeDispersionPanel.Controls.Add(moneyLabel, 0, incomeDispersionPanel.RowCount - 1);
-        incomeDispersionPanel.Controls.Add(moneyNumericUpDown, 1, incomeDispersionPanel.RowCount - 1);
-        incomeDispersionPanel.Controls.Add(probabilityLabel, 2, incomeDispersionPanel.RowCount - 1);
-        incomeDispersionPanel.Controls.Add(probabilityNumericUpDown, 3, incomeDispersionPanel.RowCount - 1);
-    }
-
-    private void RemoveLastIncomeField (object? sender, EventArgs e)
-    {
-        if (incomeDispersionPanel.RowCount > 0)
-        {
-            incomeDispersionPanel.RowCount--;
-            incomeDispersionPanel.RowStyles.RemoveAt(incomeDispersionPanel.RowCount);
-            for (int i = 0; i < 4; i++)
-            {
-                Control? control = incomeDispersionPanel.GetControlFromPosition(i, incomeDispersionPanel.RowCount);
-                if (control != null)
-                {
-                    incomeDispersionPanel.Controls.Remove(control);
-                }
-            }
-        }
-    }
-
-    internal static List<KeyValuePair<int, double>> GetDispersionList ()
-    {
-        List<KeyValuePair<int, double>> incomeDispersion = [];
-        for (int row = 0; row < incomeDispersionPanel.RowCount; row++)
-        {
-            if (incomeDispersionPanel.GetControlFromPosition(1, row) is NumericUpDown moneyNumericUpDown && incomeDispersionPanel.GetControlFromPosition(3, row) is NumericUpDown probabilityNumericUpDown)
-            {
-                incomeDispersion.Add(new KeyValuePair<int, double>((int) moneyNumericUpDown.Value, (double) probabilityNumericUpDown.Value));
-            }
-        }
-
-        return incomeDispersion;
-    }
-
-    private static async void CalculateButton_Click (object? sender, EventArgs e)
-    {
-        int housePrice = (int) housePriceNumericUpDown.Value;
-        int maxReservedMoney = (int) maxReservedMoneyNumericUpDown.Value;
-        int creditDuration = (int) creditDurationNumericUpDown.Value;
-        int personalMoney = (int) personalMoneyNumericUpDown.Value;
-        double loanInterestRate = (double) loanInterestRateNumericUpDown.Value;
-
-        List<KeyValuePair<int, double>> incomeDispersion = GetDispersionList();
-
-        if (!Validator.IsProbabilitySumValid(incomeDispersion))
-        {
-            _ = MessageBox.Show($"Сумма вероятностей не равна {1.0}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-
-        if (taskTypeCheckBox.Checked)
-        {
-            await Task.Run(() =>
-            {
-                List<DataPoint> dataPoints = Utilities.CalculatePoints_original(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-                Utilities.DrawGraphic(dataPoints, logs);
-            }).ConfigureAwait(false);
-        }
-        else
-        {
-            await Task.Run(() =>
-            {
-                List<DataPoint> dataPoints = Utilities.CalculatePoints1(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-                Utilities.DrawGraphic(dataPoints, logs);
-            }).ConfigureAwait(false);
-        }
-    }
-
-    private static void TaskType_Click (object? sender, EventArgs e)
-    {
-        if (taskTypeCheckBox.Checked)
-        {
-            taskTypeCheckBox.Text = "Выбрана постановка 2";
-        }
-        else
-        {
-            taskTypeCheckBox.Text = "Выбрана постановка 1";
+            ButtonClicks.AddIncomeField(value.Key, value.Value);
         }
     }
 }
