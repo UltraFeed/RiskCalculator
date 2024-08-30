@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using OxyPlot;
-using OxyPlot.Series;
-using OxyPlot.WindowsForms;
 
 #pragma warning disable CA1305
 #pragma warning disable CA1814
