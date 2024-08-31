@@ -20,9 +20,8 @@ internal static class SecondStatement
         // подходящий тип данных - Dictionary<Tuple<int, int>, double>
         // словарь - список неповторяющихся элементов, где ключом будет два инта, как индексы массива
         // а значением - вероятность
-        double [,] nextRisk = new double [housePrice + 1, housePrice + 1]; // заполняется нулями по умолчанию
-        double [,] currentRisk = new double [housePrice + 1, housePrice + 1]; // заполняется нулями по умолчанию
-
+        double [,] nextRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
+        double [,] currentRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
         // Считаем начальные условия для конечного момента времени
         // Цикл по ST-1
         for (int housePriceToPay = 0; housePriceToPay < housePrice; housePriceToPay++)
@@ -54,7 +53,7 @@ internal static class SecondStatement
                     }
                     else
                     {
-                        currentRisk [currentHousePrice, currentMoney] = double.MaxValue;
+                        currentRisk [currentHousePrice, currentMoney] = 1.0;
 
                         for (int currentReserve = 0; currentReserve < currentMoney; currentReserve++)
                         {
@@ -85,7 +84,6 @@ internal static class SecondStatement
             }
 
             nextRisk = currentRisk;
-            // возможно нужно обнулять currentRisk
         }
 
         // Начальный момент времени

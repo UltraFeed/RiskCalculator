@@ -49,7 +49,7 @@ internal static class ButtonClicks
             await Task.Run(() =>
             {
                 List<DataPoint> dataPoints = SecondStatement.CalculatePoints_original(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-                ButtonClicks.DrawGraphic(dataPoints, logs);
+                DrawGraphic(dataPoints, logs);
             }).ConfigureAwait(false);
         }
         else
@@ -57,7 +57,7 @@ internal static class ButtonClicks
             await Task.Run(() =>
             {
                 List<DataPoint> dataPoints = FirstStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-                ButtonClicks.DrawGraphic(dataPoints, logs);
+                DrawGraphic(dataPoints, logs);
             }).ConfigureAwait(false);
         }
     }
