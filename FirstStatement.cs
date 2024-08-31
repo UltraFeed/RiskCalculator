@@ -18,10 +18,10 @@ internal static class FirstStatement
     // Затем нужно пройти по значениям от 0 до maxReservedMoney и сохранить пары: зарезервированные деньги - риск
     // Потом строим график. По оси y риск, по оси x зарезервированные деньги
 
-    internal static List<DataPoint> CalculatePoints (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion, out StringBuilder logs)
+    internal static (List<DataPoint>, StringBuilder) CalculatePoints (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion)
     {
         List<DataPoint> dataPoints = [];
-        logs = new StringBuilder();
+        StringBuilder logs = new();
 
         for (int startReserve = 0; startReserve <= maxReservedMoney; startReserve++)
         {
@@ -73,6 +73,6 @@ internal static class FirstStatement
             dataPoints.Add(new DataPoint(startReserve, badPointsProbabilitySum));
         }
 
-        return dataPoints;
+        return (dataPoints, logs);
     }
 }

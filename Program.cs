@@ -5,7 +5,6 @@ namespace RiskCalculator;
 
 internal sealed class Program : Form
 {
-    internal static CheckBox taskTypeCheckBox;
     internal static NumericUpDown housePriceNumericUpDown;
     internal static NumericUpDown maxReservedMoneyNumericUpDown;
     internal static NumericUpDown creditDurationNumericUpDown;
@@ -42,21 +41,6 @@ internal sealed class Program : Form
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Dock = DockStyle.Fill,
             ColumnCount = 2,
-        };
-
-        Label taskTypeLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Выберите постановку задачи"
-        };
-
-        taskTypeCheckBox = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "",
-            AutoCheck = true,
         };
 
         Label housePriceLabel = new()
@@ -189,12 +173,8 @@ internal sealed class Program : Form
         addIncomeButton.Click += (sender, e) => ButtonClicks.AddIncomeField(0, 0.0);
         removeIncomeButton.Click += ButtonClicks.RemoveLastIncomeField;
         calculateButton.Click += ButtonClicks.CalculateButton_Click;
-        taskTypeCheckBox.CheckedChanged += ButtonClicks.TaskType_Click;
-        taskTypeCheckBox.Checked = true;
 
         // Создание панелей для размещения элементов
-        panel.Controls.Add(taskTypeLabel);
-        panel.Controls.Add(taskTypeCheckBox);
         panel.Controls.Add(housePriceLabel);
         panel.Controls.Add(housePriceNumericUpDown);
         panel.Controls.Add(maxReservedMoneyLabel);

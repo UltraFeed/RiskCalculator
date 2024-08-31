@@ -30,6 +30,11 @@ internal static class ButtonClicks
         int personalMoney = (int) Program.personalMoneyNumericUpDown.Value;
         double loanInterestRate = (double) Program.loanInterestRateNumericUpDown.Value;
 
+        List<DataPoint> dataPoints1 = [];
+        List<DataPoint> dataPoints2 = [];
+        StringBuilder logs1 = new();
+        StringBuilder logs2 = new();
+
         List<KeyValuePair<int, double>> incomeDispersion = GetDispersionList();
 
         if (Math.Abs(incomeDispersion.Sum(pair => pair.Value) - 1.0) > 1e-9)
@@ -44,34 +49,10 @@ internal static class ButtonClicks
             return;
         }
 
-        if (Program.taskTypeCheckBox.Checked)
-        {
-            await Task.Run(() =>
-            {
-                List<DataPoint> dataPoints = SecondStatement.CalculatePoints_original(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-                DrawGraphic(dataPoints, logs);
-            }).ConfigureAwait(false);
-        }
-        else
-        {
-            await Task.Run(() =>
-            {
-                List<DataPoint> dataPoints = FirstStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion, out StringBuilder logs);
-                DrawGraphic(dataPoints, logs);
-            }).ConfigureAwait(false);
-        }
-    }
+        _ = await Task.Run(() => (dataPoints1, logs1) = FirstStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
+        _ = await Task.Run(() => (dataPoints2, logs2) = SecondStatement.CalculatePoints_original(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
 
-    internal static void TaskType_Click (object? sender, EventArgs e)
-    {
-        if (Program.taskTypeCheckBox.Checked)
-        {
-            Program.taskTypeCheckBox.Text = $"Выбрана постановка 2";
-        }
-        else
-        {
-            Program.taskTypeCheckBox.Text = $"Выбрана постановка 1";
-        }
+        await Task.Run(() => DrawGraphic(dataPoints1, logs1, dataPoints2, logs2)).ConfigureAwait(false);
     }
 
     internal static void RemoveLastIncomeField (object? sender, EventArgs e)
@@ -135,7 +116,7 @@ internal static class ButtonClicks
         Program.incomeDispersionPanel.Controls.Add(probabilityNumericUpDown, 3, Program.incomeDispersionPanel.RowCount - 1);
     }
 
-    internal static void DrawGraphic (List<DataPoint> dataPoints, StringBuilder logs)
+    internal static void DrawGraphic (List<DataPoint> dataPoints1, StringBuilder logs1, List<DataPoint> dataPoints2, StringBuilder logs2)
     {
         using Form form = new()
         {
@@ -147,11 +128,6 @@ internal static class ButtonClicks
         };
 
         PlotModel plotModel = new();
-        LineSeries lineSeries = new()
-        {
-            ItemsSource = dataPoints
-        };
-        plotModel.Series.Add(lineSeries);
 
         PlotView plotView = new()
         {
@@ -169,16 +145,26 @@ internal static class ButtonClicks
             Text = "График",
             Font = new Font("null", 14),
         };
+
         graphTabPage.Controls.Add(plotView);
         tabControl.TabPages.Add(graphTabPage);
+        form.Controls.Add(tabControl);
 
-        TabPage logsTabPage = new()
+        // Первый график
+        LineSeries lineSeries1 = new()
         {
-            Text = "Логи",
-            Font = new Font("null", 14),
+            ItemsSource = dataPoints1,
+            Color = OxyColors.Blue
         };
 
-        TextBox logTextBox = new()
+        TabPage logsTabPage1 = new()
+        {
+            Text = "Логи постановки 1",
+            //Font = new Font("null", 14),
+            BackColor = Color.Blue
+        };
+
+        TextBox logTextBox1 = new()
         {
             Dock = DockStyle.Fill,
             ScrollBars = ScrollBars.Vertical,
@@ -186,13 +172,42 @@ internal static class ButtonClicks
             ReadOnly = true,
             WordWrap = false,
             Font = new Font("null", 14),
-            Text = logs.ToString()
+            Text = logs1.ToString()
         };
 
-        logsTabPage.Controls.Add(logTextBox);
-        tabControl.TabPages.Add(logsTabPage);
+        plotModel.Series.Add(lineSeries1);
+        logsTabPage1.Controls.Add(logTextBox1);
+        tabControl.TabPages.Add(logsTabPage1);
 
-        form.Controls.Add(tabControl);
+        // Второй график
+        LineSeries lineSeries2 = new()
+        {
+            ItemsSource = dataPoints2,
+            Color = OxyColors.Red
+        };
+
+        TabPage logsTabPage2 = new()
+        {
+            Text = "Логи постановки 2",
+            //Font = new Font("null", 14),
+            BackColor = Color.Red
+        };
+
+        TextBox logTextBox2 = new()
+        {
+            Dock = DockStyle.Fill,
+            ScrollBars = ScrollBars.Vertical,
+            Multiline = true,
+            ReadOnly = true,
+            WordWrap = false,
+            Font = new Font("null", 14),
+            Text = logs2.ToString()
+        };
+
+        plotModel.Series.Add(lineSeries2);
+        logsTabPage2.Controls.Add(logTextBox2);
+        tabControl.TabPages.Add(logsTabPage2);
+
         _ = form.ShowDialog();
     }
 }
