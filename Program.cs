@@ -42,7 +42,6 @@ internal sealed class Program : Form
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Dock = DockStyle.Fill,
             ColumnCount = 2,
-            //Padding = new Padding(10)
         };
 
         Label taskTypeLabel = new()

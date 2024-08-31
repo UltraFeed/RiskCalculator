@@ -65,7 +65,6 @@ internal static class FirstStatement
                 currentLevel = nextLevel;
             }
 
-            _ = logs.AppendLine();
             _ = logs.AppendLine($"Риск заёмщика при резерве {startReserve,-3}: {Math.Round(badPointsProbabilitySum, 5),-15}");
             _ = logs.AppendLine($"Ипотечный кредит в тысячах рублей, D0: {housePrice - personalMoney + startReserve}");
             _ = logs.AppendLine($"Годовой платеж в тысячах рублей, R: {yearlyPayment}");

@@ -109,6 +109,7 @@ internal static class SecondStatement
 
             _ = logs.AppendLine($"Начальный резерв: {startReserve}");
             _ = logs.AppendLine($"Риск: {tmp}");
+            _ = logs.AppendLine();
             dataPoints.Add(new DataPoint(startReserve, tmp));
         }
 
