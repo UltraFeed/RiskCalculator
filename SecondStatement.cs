@@ -57,25 +57,25 @@ internal static class SecondStatement
                         {
                             double nextPayment = (currentHousePrice - currentMoney + currentReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration - currentTime) / (Math.Pow(1 + loanInterestRate, creditDuration - currentTime) - 1));
 
-                            double tmp = 0;
+                            double tmpRisk = 0;
                             foreach (KeyValuePair<int, double> income in incomeDispersion)
                             {
                                 // Расчёт риска для текущего состояния резерва
                                 if (currentReserve + income.Key < nextPayment)
                                 {
-                                    tmp += income.Value;
+                                    tmpRisk += income.Value;
                                 }
                                 else
                                 {
                                     int indexS = Convert.ToInt32(Math.Ceiling(((currentHousePrice - currentMoney + currentReserve) * (1 + loanInterestRate)) - nextPayment));
                                     int indexM = Convert.ToInt32(Math.Floor(currentReserve + income.Key - nextPayment));
-                                    tmp += income.Value * nextRisk [indexS, indexM];
+                                    tmpRisk += income.Value * nextRisk [indexS, indexM];
                                 }
                             }
 
-                            if (tmp < currentRisk [currentHousePrice, currentMoney])
+                            if (tmpRisk < currentRisk [currentHousePrice, currentMoney])
                             {
-                                currentRisk [currentHousePrice, currentMoney] = tmp;
+                                currentRisk [currentHousePrice, currentMoney] = tmpRisk;
                             }
                         }
                     }
