@@ -82,6 +82,7 @@ internal static class SecondStatement
                 }
             }
 
+            // Обновление риска для следующего момента времени
             nextRisk = currentRisk;
         }
 
