@@ -22,18 +22,15 @@ internal static class SecondStatement
         double [,] currentRisk = new double [housePrice + 1, housePrice + 1];
 
         // Считаем начальные условия для конечного момента времени
-        // Цикл по ST-1
-        for (int housePriceToPay = 0; housePriceToPay < housePrice; housePriceToPay++)
+        for (int housePriceToPay = 0; housePriceToPay <= housePrice; housePriceToPay++)
         {
-            // Цикл по MT-1
-            for (int moneyToPay = 0; moneyToPay < housePrice; moneyToPay++)
+            for (int moneyToPay = 0; moneyToPay <= housePrice; moneyToPay++)
             {
-                // Цикл по количеству пар в распределении
-                for (int k = 0; k < incomeDispersion.Count; k++)
+                foreach (KeyValuePair<int, double> income in incomeDispersion)
                 {
-                    if (incomeDispersion [k].Key < ((housePriceToPay - moneyToPay) * (1 + loanInterestRate)))
+                    if (income.Key < (housePriceToPay - moneyToPay) * (1 + loanInterestRate))
                     {
-                        nextRisk [housePriceToPay, moneyToPay] += incomeDispersion [k].Value;
+                        nextRisk [housePriceToPay, moneyToPay] += income.Value;
                     }
                 }
             }
