@@ -82,7 +82,7 @@ internal static class SecondStatement
         }
 
         // Начальный момент времени
-        for (int startReserve = 0; startReserve < maxReservedMoney; startReserve++)
+        for (int startReserve = 0; startReserve <= maxReservedMoney; startReserve++)
         {
             double yearlyPayment = (housePrice - personalMoney + startReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
             double tmp = 0;
@@ -100,9 +100,11 @@ internal static class SecondStatement
                 }
             }
 
-            _ = logs.AppendLine($"Начальный резерв: {startReserve}");
-            _ = logs.AppendLine($"Риск: {tmp}");
+            _ = logs.AppendLine($"Резерв: {startReserve,+20}");
+            _ = logs.AppendLine($"Риск: {Math.Round(tmp, 5),+30}");
+            _ = logs.AppendLine($"Годовой платеж: {Math.Round(yearlyPayment, 5),+10}");
             _ = logs.AppendLine();
+
             dataPoints.Add(new DataPoint(startReserve, tmp));
         }
 
