@@ -18,8 +18,8 @@ internal static class SecondStatement
         _ = logs.AppendLine($"Вторая постановка");
         _ = logs.AppendLine();
 
-        double [,] nextRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
-        double [,] currentRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
+        double [,] nextRisk = new double [housePrice + 1, housePrice + 1];
+        double [,] currentRisk = new double [housePrice + 1, housePrice + 1];
 
         // Считаем начальные условия для конечного момента времени
         // Цикл по ST-1
