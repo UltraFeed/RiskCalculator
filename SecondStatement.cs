@@ -39,9 +39,9 @@ internal static class SecondStatement
         // Основная часть
         for (int currentTime = creditDuration - 2; currentTime > 1; currentTime--)
         {
-            for (int currentHousePrice = 0; currentHousePrice < housePrice; currentHousePrice++)
+            for (int currentHousePrice = 0; currentHousePrice <= housePrice; currentHousePrice++)
             {
-                for (int currentMoney = 0; currentMoney < housePrice; currentMoney++)
+                for (int currentMoney = 0; currentMoney <= housePrice; currentMoney++)
                 {
                     if (currentHousePrice < currentMoney)
                     {
