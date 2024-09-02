@@ -82,7 +82,7 @@ internal static class SecondStatement
             nextRisk = currentRisk;
         }
 
-        // Начальный момент времени
+        // Рассчитываем риск для начального момента времени
         for (int startReserve = 0; startReserve <= maxReservedMoney; startReserve++)
         {
             double yearlyPayment = (housePrice - personalMoney + startReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));
