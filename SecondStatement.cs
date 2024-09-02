@@ -36,13 +36,14 @@ internal static class SecondStatement
             }
         }
 
-        // Основная часть
+        // Основная часть вычислений для всех шагов времени от конца к началу
         for (int currentTime = creditDuration - 2; currentTime > 1; currentTime--)
         {
             for (int currentHousePrice = 0; currentHousePrice <= housePrice; currentHousePrice++)
             {
                 for (int currentMoney = 0; currentMoney <= housePrice; currentMoney++)
                 {
+                    // Если не хватает денег, то риск = 0
                     if (currentHousePrice < currentMoney)
                     {
                         currentRisk [currentHousePrice, currentMoney] = 0;
@@ -51,6 +52,7 @@ internal static class SecondStatement
                     {
                         currentRisk [currentHousePrice, currentMoney] = 1.0;
 
+                        // Перебор возможных резервов
                         for (int currentReserve = 0; currentReserve < currentMoney; currentReserve++)
                         {
                             double nextPayment = (currentHousePrice - currentMoney + currentReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration - currentTime) / (Math.Pow(1 + loanInterestRate, creditDuration - currentTime) - 1));
@@ -58,6 +60,7 @@ internal static class SecondStatement
                             double tmp = 0;
                             foreach (KeyValuePair<int, double> income in incomeDispersion)
                             {
+                                // Расчёт риска для текущего состояния резерва
                                 if (currentReserve + income.Key < nextPayment)
                                 {
                                     tmp += income.Value;
