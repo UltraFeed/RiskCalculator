@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.VisualBasic.Logging;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.WindowsForms;
@@ -30,11 +31,6 @@ internal static class ButtonClicks
         int personalMoney = (int) Program.personalMoneyNumericUpDown.Value;
         double loanInterestRate = (double) Program.loanInterestRateNumericUpDown.Value;
 
-        List<DataPoint> dataPoints1 = [];
-        List<DataPoint> dataPoints2 = [];
-        StringBuilder logs1 = new();
-        StringBuilder logs2 = new();
-
         List<KeyValuePair<int, double>> incomeDispersion = GetDispersionList();
 
         if (Math.Abs(incomeDispersion.Sum(pair => pair.Value) - 1.0) > 1e-9)
@@ -49,10 +45,27 @@ internal static class ButtonClicks
             return;
         }
 
-        _ = await Task.Run(() => (dataPoints1, logs1) = FirstStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
-        _ = await Task.Run(() => (dataPoints2, logs2) = SecondStatement.CalculatePoints_original(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
-
-        await Task.Run(() => DrawGraphic(dataPoints1, logs1, dataPoints2, logs2)).ConfigureAwait(false);
+        if (Program.statementTypeComboBox.SelectedItem is KeyValuePair<string, CalculationType> selectedItem && selectedItem.Value == CalculationType.FirstOption)
+        {
+            (List<DataPoint> dataPoints, StringBuilder logs) = await Task.Run(() => FirstStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
+            await Task.Run(() => DrawGraphic(dataPoints, logs)).ConfigureAwait(false);
+        }
+        else if (Program.statementTypeComboBox.SelectedItem is KeyValuePair<string, CalculationType> selectedItem2 && selectedItem2.Value == CalculationType.SecondOption)
+        {
+            (List<DataPoint> dataPoints, StringBuilder logs) = await Task.Run(() => SecondStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
+            await Task.Run(() => DrawGraphic(dataPoints, logs)).ConfigureAwait(false);
+        }
+        else if (Program.statementTypeComboBox.SelectedItem is KeyValuePair<string, CalculationType> selectedItemBoth && selectedItemBoth.Value == CalculationType.Both)
+        {
+            (List<DataPoint> dataPoints1, StringBuilder logs1) = await Task.Run(() => FirstStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
+            (List<DataPoint> dataPoints2, StringBuilder logs2) = await Task.Run(() => SecondStatement.CalculatePoints(housePrice, maxReservedMoney, creditDuration, personalMoney, loanInterestRate, incomeDispersion)).ConfigureAwait(false);
+            await Task.Run(() => DrawGraphic(dataPoints1, logs1, dataPoints2, logs2)).ConfigureAwait(false);
+        }
+        else
+        {
+            _ = MessageBox.Show($"Неизвестная ошибка выбора постановки");
+            return;
+        }
     }
 
     internal static void RemoveLastIncomeField (object? sender, EventArgs e)
@@ -116,7 +129,7 @@ internal static class ButtonClicks
         Program.incomeDispersionPanel.Controls.Add(probabilityNumericUpDown, 3, Program.incomeDispersionPanel.RowCount - 1);
     }
 
-    internal static void DrawGraphic (List<DataPoint> dataPoints1, StringBuilder logs1, List<DataPoint> dataPoints2, StringBuilder logs2)
+    internal static void DrawGraphic (List<DataPoint> dataPoints1, StringBuilder logs1, List<DataPoint>? dataPoints2 = null, StringBuilder? logs2 = null)
     {
         using Form form = new()
         {
@@ -159,8 +172,7 @@ internal static class ButtonClicks
 
         TabPage logsTabPage1 = new()
         {
-            Text = "Логи постановки 1",
-            //Font = new Font("null", 14),
+            Text = "Логи",
             BackColor = Color.Blue
         };
 
@@ -172,41 +184,45 @@ internal static class ButtonClicks
             ReadOnly = true,
             WordWrap = false,
             Font = new Font("null", 14),
-            Text = logs1.ToString()
+            Text = logs1.ToString(),
+            ForeColor = Color.Blue
         };
 
         plotModel.Series.Add(lineSeries1);
         logsTabPage1.Controls.Add(logTextBox1);
         tabControl.TabPages.Add(logsTabPage1);
 
-        // Второй график
-        LineSeries lineSeries2 = new()
+        if (dataPoints2 != null && logs2 != null)
         {
-            ItemsSource = dataPoints2,
-            Color = OxyColors.Red
-        };
+            // Второй график
+            LineSeries lineSeries2 = new()
+            {
+                ItemsSource = dataPoints2,
+                Color = OxyColors.Red
+            };
 
-        TabPage logsTabPage2 = new()
-        {
-            Text = "Логи постановки 2",
-            //Font = new Font("null", 14),
-            BackColor = Color.Red
-        };
+            TabPage logsTabPage2 = new()
+            {
+                Text = "Логи",
+                BackColor = Color.Red
+            };
 
-        TextBox logTextBox2 = new()
-        {
-            Dock = DockStyle.Fill,
-            ScrollBars = ScrollBars.Vertical,
-            Multiline = true,
-            ReadOnly = true,
-            WordWrap = false,
-            Font = new Font("null", 14),
-            Text = logs2.ToString()
-        };
+            TextBox logTextBox2 = new()
+            {
+                Dock = DockStyle.Fill,
+                ScrollBars = ScrollBars.Vertical,
+                Multiline = true,
+                ReadOnly = true,
+                WordWrap = false,
+                Font = new Font("null", 14),
+                Text = logs2.ToString(),
+                ForeColor = Color.Red
+            };
 
-        plotModel.Series.Add(lineSeries2);
-        logsTabPage2.Controls.Add(logTextBox2);
-        tabControl.TabPages.Add(logsTabPage2);
+            plotModel.Series.Add(lineSeries2);
+            logsTabPage2.Controls.Add(logTextBox2);
+            tabControl.TabPages.Add(logsTabPage2);
+        }
 
         _ = form.ShowDialog();
     }

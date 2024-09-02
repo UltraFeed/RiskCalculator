@@ -10,10 +10,14 @@ internal static class SecondStatement
 {
     // Вторая постановка
     // Постановка та же самая, но есть возможность управлять резервом.
-    internal static (List<DataPoint>, StringBuilder) CalculatePoints_original (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion)
+    internal static (List<DataPoint>, StringBuilder) CalculatePoints (int housePrice, int maxReservedMoney, int creditDuration, int personalMoney, double loanInterestRate, List<KeyValuePair<int, double>> incomeDispersion)
     {
         List<DataPoint> dataPoints = [];
         StringBuilder logs = new();
+
+        _ = logs.AppendLine($"Вторая постановка");
+        _ = logs.AppendLine();
+
         double [,] nextRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
         double [,] currentRisk = new double [housePrice, housePrice]; // заполняется нулями по умолчанию
 

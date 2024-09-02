@@ -23,6 +23,9 @@ internal static class FirstStatement
         List<DataPoint> dataPoints = [];
         StringBuilder logs = new();
 
+        _ = logs.AppendLine($"Первая постановка");
+        _ = logs.AppendLine();
+
         for (int startReserve = 0; startReserve <= maxReservedMoney; startReserve++)
         {
             double yearlyPayment = (housePrice - personalMoney + startReserve) * (loanInterestRate * Math.Pow(1 + loanInterestRate, creditDuration) / (Math.Pow(1 + loanInterestRate, creditDuration) - 1));

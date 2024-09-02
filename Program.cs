@@ -3,8 +3,17 @@
 
 namespace RiskCalculator;
 
+public enum CalculationType
+{
+    Both,
+    FirstOption,
+    SecondOption,
+}
+
 internal sealed class Program : Form
 {
+    internal static ComboBox statementTypeComboBox;
+
     internal static NumericUpDown housePriceNumericUpDown;
     internal static NumericUpDown maxReservedMoneyNumericUpDown;
     internal static NumericUpDown creditDurationNumericUpDown;
@@ -43,11 +52,10 @@ internal sealed class Program : Form
             ColumnCount = 2,
         };
 
-        Label housePriceLabel = new()
+        statementTypeComboBox = new()
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Стоимость квартиры (тыс. руб.), S0:"
+            DropDownStyle = ComboBoxStyle.DropDownList,
         };
 
         housePriceNumericUpDown = new()
@@ -60,13 +68,6 @@ internal sealed class Program : Form
             UpDownAlign = LeftRightAlignment.Right,
         };
 
-        Label maxReservedMoneyLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Макс. начальный резерв денег (тыс. руб.), Z0max:"
-        };
-
         maxReservedMoneyNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
@@ -75,13 +76,6 @@ internal sealed class Program : Form
             Value = 50,
             DecimalPlaces = 0,
             UpDownAlign = LeftRightAlignment.Right,
-        };
-
-        Label creditDurationLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Длительность кредита в годах, T:"
         };
 
         creditDurationNumericUpDown = new()
@@ -94,13 +88,6 @@ internal sealed class Program : Form
             UpDownAlign = LeftRightAlignment.Right,
         };
 
-        Label personalMoneyLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Собственные деньги в нулевой момент (тыс. руб.), M0:"
-        };
-
         personalMoneyNumericUpDown = new()
         {
             Dock = DockStyle.Fill,
@@ -109,13 +96,6 @@ internal sealed class Program : Form
             Value = 50,
             DecimalPlaces = 0,
             UpDownAlign = LeftRightAlignment.Right,
-        };
-
-        Label loanInterestRateLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Годовая ставка по кредиту в долях, r:"
         };
 
         loanInterestRateNumericUpDown = new()
@@ -127,13 +107,6 @@ internal sealed class Program : Form
             DecimalPlaces = 2,
             UpDownAlign = LeftRightAlignment.Right,
             Increment = 0.01M,
-        };
-
-        Label incomeDispersionLabel = new()
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Text = "Распределение годового дохода, ξt:",
         };
 
         Button addIncomeButton = new()
@@ -174,19 +147,34 @@ internal sealed class Program : Form
         removeIncomeButton.Click += ButtonClicks.RemoveLastIncomeField;
         calculateButton.Click += ButtonClicks.CalculateButton_Click;
 
-        // Создание панелей для размещения элементов
-        panel.Controls.Add(housePriceLabel);
+        _ = statementTypeComboBox.Items.Add(new KeyValuePair<string, CalculationType>("Обе", CalculationType.Both));
+        _ = statementTypeComboBox.Items.Add(new KeyValuePair<string, CalculationType>("Первая", CalculationType.FirstOption));
+        _ = statementTypeComboBox.Items.Add(new KeyValuePair<string, CalculationType>("Вторая", CalculationType.SecondOption));
+        statementTypeComboBox.DisplayMember = nameof(KeyValuePair<string, CalculationType>.Key);
+        statementTypeComboBox.ValueMember = nameof(KeyValuePair<string, CalculationType>.Value);
+
+        statementTypeComboBox.SelectedIndex = 0;
+        panel.Controls.Add(new Label { Dock = DockStyle.Fill, AutoSize = true, Text = "Тип постановки" });
+        panel.Controls.Add(statementTypeComboBox);
+
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true, Text = "Стоимость квартиры (тыс. руб.), S0:" });
         panel.Controls.Add(housePriceNumericUpDown);
-        panel.Controls.Add(maxReservedMoneyLabel);
+
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true, Text = "Макс. начальный резерв денег (тыс. руб.), Z0max:" });
         panel.Controls.Add(maxReservedMoneyNumericUpDown);
-        panel.Controls.Add(creditDurationLabel);
+
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true, Text = "Длительность кредита в годах, T:" });
         panel.Controls.Add(creditDurationNumericUpDown);
-        panel.Controls.Add(personalMoneyLabel);
+
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true, Text = "Собственные деньги в нулевой момент (тыс. руб.), M0:" });
         panel.Controls.Add(personalMoneyNumericUpDown);
-        panel.Controls.Add(loanInterestRateLabel);
+
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true, Text = "Годовая ставка по кредиту в долях, r:" });
         panel.Controls.Add(loanInterestRateNumericUpDown);
-        panel.Controls.Add(incomeDispersionLabel);
+
+        panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true, Text = "Распределение годового дохода, ξt:" });
         panel.Controls.Add(new Label() { Dock = DockStyle.Fill, AutoSize = true });
+
         panel.Controls.Add(addIncomeButton);
         panel.Controls.Add(removeIncomeButton);
         panel.Controls.Add(incomeDispersionPanel);
