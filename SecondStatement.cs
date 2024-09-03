@@ -28,6 +28,7 @@ internal static class SecondStatement
             {
                 foreach (KeyValuePair<int, double> income in incomeDispersion)
                 {
+                    // Проверка вероятности для последнего платежа
                     if (income.Key < (housePriceToPay - moneyToPay) * (1 + loanInterestRate))
                     {
                         nextRisk [housePriceToPay, moneyToPay] += income.Value;
